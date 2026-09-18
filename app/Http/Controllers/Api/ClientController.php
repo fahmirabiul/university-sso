@@ -18,8 +18,7 @@ class ClientController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $clients = $this->clients->forUser($request->user());
-
+        $clients = $request->user()->oauthApps()->where('revoked', false)->orderBy('name')->get();
         return $this->successResponse('Clients retrieved successfully.', $clients);
     }
 
@@ -42,9 +41,9 @@ class ClientController extends Controller
 
     public function destroy(Request $request, string $clientId): JsonResponse
     {
-        $client = $this->clients->findForUser($clientId, $request->user()->id);
+        $client = $request->user()->oauthApps()->where('revoked', false)->find($clientId);
 
-        if (! $client) {
+        if (!$client) {
             return $this->errorResponse('Client not found.', 404);
         }
 
