@@ -3,23 +3,40 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\UserProfile;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Membuat 50 User palsu. 
+        // Untuk setiap user yang berhasil dibuat, kita buatkan profilnya.
+        User::factory(50)->create()->each(function ($user) {
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            // Membuat profil dummy untuk masing-masing user
+            UserProfile::create([
+                'user_id' => $user->id,
+                'identifier_number' => fake()->unique()->numerify('10########'), // Contoh format NIM/NIP
+                'full_name' => fake()->name(),
+                'department' => fake()->randomElement(['Teknik Informatika', 'Sistem Informasi', 'Ilmu Komunikasi', 'Manajemen']),
+            ]);
+        });
+
+        // Membuat 1 Akun Admin Spesifik untuk Anda testing login
+        $admin = User::factory()->create([
+            'email' => 'admin@university.ac.id',
+            // password bawaan factory adalah 'password'
+        ]);
+
+        UserProfile::create([
+            'user_id' => $admin->id,
+            'identifier_number' => '1111111111',
+            'full_name' => 'Administrator Utama',
+            'department' => 'IT Center',
         ]);
     }
 }

@@ -19,6 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        \Laravel\Passport\Passport::tokensCan([
+            'view-profile' => 'View basic profile information',
+            'edit-profile' => 'Edit profile information',
+        ]);
     }
 }
