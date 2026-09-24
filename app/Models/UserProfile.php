@@ -11,11 +11,28 @@ class UserProfile extends Model
         'user_id',
         'identifier_number',
         'full_name',
-        'department',
+        'study_program_id',
+        'unit_id',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the study program associated with the user profile.
+     */
+    public function studyProgram(): BelongsTo
+    {
+        return $this->belongsTo(StudyProgram::class);
+    }
+
+    /**
+     * Get the unit associated with the user profile.
+     */
+    public function unit(): BelongsTo
+    {
+        return $this->belongsTo(Unit::class);
     }
 }

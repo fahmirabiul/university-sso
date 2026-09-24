@@ -10,8 +10,8 @@
         <h5 class="mb-0">Daftar Mahasiswa & Dosen</h5>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">Tambah Pengguna</button>
     </div>
-    <div class="table-responsive text-nowrap">
-        <table class="table table-hover">
+    <div class="table-responsive text-nowrap p-3">
+        <table class="table table-hover" id="usersTable">
             <thead>
                 <tr>
                     <th>Nama Lengkap</th>
@@ -29,8 +29,11 @@
                         @if($user->profile && $user->profile->identifier_number)
                             <div class="text-muted small">{{ $user->profile->identifier_number }}</div>
                         @endif
-                        @if($user->profile && $user->profile->department)
-                            <div class="text-muted small">{{ $user->profile->department }}</div>
+                        @if($user->profile && $user->profile->studyProgram)
+                            <div class="text-muted small">{{ $user->profile->studyProgram->name }} ({{ $user->profile->studyProgram->faculty->code ?? '' }})</div>
+                        @endif
+                        @if($user->profile && $user->profile->unit)
+                            <div class="text-muted small">{{ $user->profile->unit->name }}</div>
                         @endif
                     </td>
                     <td>{{ $user->email }}</td>
@@ -72,13 +75,33 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-12 mb-3">
                                             <label class="form-label">Nomor Identitas (NIM/NIP)</label>
                                             <input type="text" name="identifier_number" class="form-control" value="{{ $user->profile->identifier_number ?? '' }}">
                                         </div>
+                                    </div>
+                                    <div class="row">
                                         <div class="col-md-6 mb-3">
-                                            <label class="form-label">Departemen / Fakultas</label>
-                                            <input type="text" name="department" class="form-control" value="{{ $user->profile->department ?? '' }}">
+                                            <label class="form-label">Program Studi</label>
+                                            <select name="study_program_id" class="form-select">
+                                                <option value="">-- Tidak Ada --</option>
+                                                @foreach($studyPrograms as $prodi)
+                                                    <option value="{{ $prodi->id }}" {{ ($user->profile->study_program_id ?? '') == $prodi->id ? 'selected' : '' }}>
+                                                        {{ $prodi->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Unit / Biro</label>
+                                            <select name="unit_id" class="form-select">
+                                                <option value="">-- Tidak Ada --</option>
+                                                @foreach($units as $unit)
+                                                    <option value="{{ $unit->id }}" {{ ($user->profile->unit_id ?? '') == $unit->id ? 'selected' : '' }}>
+                                                        {{ $unit->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -130,11 +153,7 @@
         </table>
     </div>
     
-    @if($users->hasPages())
-    <div class="card-footer d-flex justify-content-center">
-        {{ $users->links('pagination::bootstrap-5') }}
-    </div>
-    @endif
+    
 </div>
 
 <!-- Modal Create User -->
@@ -168,13 +187,29 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-12 mb-3">
                             <label class="form-label">Nomor Identitas (NIM/NIP)</label>
                             <input type="text" name="identifier_number" class="form-control" value="{{ old('identifier_number') }}">
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Departemen / Fakultas</label>
-                            <input type="text" name="department" class="form-control" value="{{ old('department') }}">
+                            <label class="form-label">Program Studi</label>
+                            <select name="study_program_id" class="form-select">
+                                <option value="">-- Tidak Ada --</option>
+                                @foreach($studyPrograms as $prodi)
+                                    <option value="{{ $prodi->id }}" {{ old('study_program_id') == $prodi->id ? 'selected' : '' }}>{{ $prodi->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Unit / Biro</label>
+                            <select name="unit_id" class="form-select">
+                                <option value="">-- Tidak Ada --</option>
+                                @foreach($units as $unit)
+                                    <option value="{{ $unit->id }}" {{ old('unit_id') == $unit->id ? 'selected' : '' }}>{{ $unit->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                     <div class="row">
@@ -224,4 +259,23 @@
     </script>
     @endpush
 @endif
+
+@push('styles')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+@endpush
+
+@push('scripts')
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#usersTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json',
+                }
+            });
+        });
+    </script>
+@endpush
+
 @endsection

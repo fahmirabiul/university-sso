@@ -12,8 +12,8 @@
             Tambah Klien
         </button>
     </div>
-    <div class="table-responsive text-nowrap">
-        <table class="table table-hover">
+    <div class="table-responsive text-nowrap p-3">
+        <table class="table table-hover" id="clientsTable">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -107,4 +107,22 @@
     </script>
     @endpush
 @endif
+
+@push('styles')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+@endpush
+
+@push('scripts')
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#clientsTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json',
+                }
+            });
+        });
+    </script>
+@endpush
 @endsection

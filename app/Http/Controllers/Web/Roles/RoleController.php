@@ -10,7 +10,7 @@ class RoleController extends Controller
 {
     public function index(Request $request)
     {
-        $roles = Role::orderBy('name')->paginate(10);
+        $roles = Role::orderBy('name')->get();
         return view('roles.index', compact('roles'));
     }
 

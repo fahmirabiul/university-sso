@@ -11,8 +11,10 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $roles = \App\Models\Role::orderBy('name')->get();
-        $users = User::with(['profile', 'roles'])->paginate(10);
-        return view('users.index', compact('users', 'roles'));
+        $studyPrograms = \App\Models\StudyProgram::with('faculty')->orderBy('name')->get();
+        $units = \App\Models\Unit::orderBy('name')->get();
+        $users = User::with(['profile.studyProgram.faculty', 'profile.unit', 'roles'])->get();
+        return view('users.index', compact('users', 'roles', 'studyPrograms', 'units'));
     }
 
     public function store(Request $request)
@@ -22,7 +24,8 @@ class UserController extends Controller
             'password' => 'required|string|min:8',
             'full_name' => 'required|string|max:255',
             'identifier_number' => 'nullable|string|max:50',
-            'department' => 'nullable|string|max:255',
+            'study_program_id' => 'nullable|exists:study_programs,id',
+            'unit_id' => 'nullable|exists:units,id',
             'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,id'
         ]);
@@ -36,7 +39,8 @@ class UserController extends Controller
         $user->profile()->create([
             'full_name' => $validated['full_name'],
             'identifier_number' => $validated['identifier_number'],
-            'department' => $validated['department'],
+            'study_program_id' => $validated['study_program_id'] ?? null,
+            'unit_id' => $validated['unit_id'] ?? null,
         ]);
 
         if (!empty($validated['roles'])) {
@@ -53,7 +57,8 @@ class UserController extends Controller
         $validated = $request->validate([
             'full_name' => 'required|string|max:255',
             'identifier_number' => 'nullable|string|max:50',
-            'department' => 'nullable|string|max:255',
+            'study_program_id' => 'nullable|exists:study_programs,id',
+            'unit_id' => 'nullable|exists:units,id',
             'is_active' => 'boolean',
             'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,id'
@@ -68,7 +73,8 @@ class UserController extends Controller
             [
                 'full_name' => $validated['full_name'],
                 'identifier_number' => $validated['identifier_number'] ?? null,
-                'department' => $validated['department'] ?? null,
+                'study_program_id' => $validated['study_program_id'] ?? null,
+                'unit_id' => $validated['unit_id'] ?? null,
             ]
         );
 

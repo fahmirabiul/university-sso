@@ -30,9 +30,10 @@ class AuthController extends Controller
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             $seconds = RateLimiter::availableIn($throttleKey);
-            throw ValidationException::withMessages([
-                'email' => "Terlalu banyak percobaan login. Silakan coba lagi dalam {$seconds} detik.",
-            ]);
+            return back()->with('lockout_seconds', $seconds)
+                ->withErrors([
+                    'email' => "Terlalu banyak percobaan masuk. Silakan coba lagi dalam {$seconds} detik.",
+                ])->onlyInput('email');
         }
 
         if (Auth::attempt($credentials)) {
