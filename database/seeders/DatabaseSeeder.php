@@ -13,6 +13,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([
+            RoleSeeder::class,
+        ]);
+
         // Membuat 50 User palsu. 
         // Untuk setiap user yang berhasil dibuat, kita buatkan profilnya.
         User::factory(50)->create()->each(function ($user) {
@@ -38,5 +42,10 @@ class DatabaseSeeder extends Seeder
             'full_name' => 'Administrator Utama',
             'department' => 'IT Center',
         ]);
+
+        $adminRole = \App\Models\Role::where('name', 'admin')->first();
+        if ($adminRole) {
+            $admin->roles()->attach($adminRole->id);
+        }
     }
 }

@@ -17,7 +17,35 @@ class ClientController extends Controller
 
     public function index(Request $request)
     {
-        $clients = $request->user()->oauthApps()->where('revoked', false)->orderBy('name')->get();
+        $clients = $request->user()->oauthApps()->orderBy('name')->get();
         return view('clients.index', compact('clients'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'redirect' => 'required|url',
+        ]);
+
+        $this->clients->createAuthorizationCodeGrantClient(
+            $validated['name'], 
+            [$validated['redirect']],
+            confidential: true,
+            user: $request->user()
+        );
+
+        return redirect()->route('clients.index')->with('success', 'Aplikasi OAuth berhasil ditambahkan.');
+    }
+
+    public function destroy(Request $request, string $clientId)
+    {
+        $client = $request->user()->oauthApps()->find($clientId);
+
+        if ($client) {
+            $this->clients->delete($client);
+        }
+
+        return redirect()->route('clients.index')->with('success', 'Akses klien telah dicabut.');
     }
 }

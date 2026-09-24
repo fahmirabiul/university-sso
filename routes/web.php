@@ -15,9 +15,19 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Clients
     Route::get('/clients', [ClientController::class, 'index'])->name('clients.index');
-    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::post('/clients', [ClientController::class, 'store'])->name('clients.store');
+    Route::delete('/clients/{client}', [ClientController::class, 'destroy'])->name('clients.destroy');
+
+    // Users
+    Route::resource('users', UserController::class)->except(['show']);
+
+    // Roles
     Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+    Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
+    Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
 });
 
 Route::middleware(['guest'])->group(function () {
