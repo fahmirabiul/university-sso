@@ -5,6 +5,20 @@
 @section('content')
 <h4 class="fw-bold mb-4">Aplikasi Klien OAuth</h4>
 
+@if(session('new_client_secret'))
+<div class="alert alert-warning alert-dismissible" role="alert">
+    <h5 class="alert-heading mb-2"><i class="bx bx-error-circle me-1"></i> Penting: Salin Kredensial Ini Sekarang!</h5>
+    <p class="mb-2">Aplikasi berhasil didaftarkan. Demi keamanan, <strong>Client Secret</strong> di bawah ini hanya akan ditampilkan satu kali ini saja dan tidak dapat ditarik kembali setelah Anda meninggalkan atau memuat ulang (refresh) halaman ini.</p>
+    <div class="mb-2">
+        <strong>Client ID:</strong> <code class="fs-6">{{ session('new_client_id') }}</code>
+    </div>
+    <div>
+        <strong>Client Secret:</strong> <code class="fs-6">{{ session('new_client_secret') }}</code>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
 <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Daftar Aplikasi</h5>
@@ -28,7 +42,7 @@
                 <tr>
                     <td><code>{{ $client->id }}</code></td>
                     <td><strong>{{ $client->name }}</strong></td>
-                    <td><code>{{ $client->redirect }}</code></td>
+                    <td><code>{{ implode(', ', $client->redirect_uris) }}</code></td>
                     <td>
                         @if($client->revoked)
                             <span class="badge bg-label-danger">Dicabut</span>

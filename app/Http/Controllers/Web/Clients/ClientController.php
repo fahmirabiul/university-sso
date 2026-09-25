@@ -28,14 +28,17 @@ class ClientController extends Controller
             'redirect' => 'required|url',
         ]);
 
-        $this->clients->createAuthorizationCodeGrantClient(
+        $client = $this->clients->createAuthorizationCodeGrantClient(
             $validated['name'], 
             [$validated['redirect']],
             confidential: true,
             user: $request->user()
         );
 
-        return redirect()->route('clients.index')->with('success', 'Aplikasi OAuth berhasil ditambahkan.');
+        return redirect()->route('clients.index')
+            ->with('success', 'Aplikasi OAuth berhasil ditambahkan.')
+            ->with('new_client_id', $client->id)
+            ->with('new_client_secret', $client->plainSecret);
     }
 
     public function destroy(Request $request, string $clientId)

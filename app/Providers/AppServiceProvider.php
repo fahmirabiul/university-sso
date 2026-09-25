@@ -32,5 +32,14 @@ class AppServiceProvider extends ServiceProvider
         \Laravel\Passport\Passport::tokensExpireIn(now()->addMinutes(15));
         \Laravel\Passport\Passport::refreshTokensExpireIn(now()->addDays(30));
         \Laravel\Passport\Passport::personalAccessTokensExpireIn(now()->addMonths(6));
+        
+        // Tell Passport to use our custom Client model to skip authorization
+        \Laravel\Passport\Passport::useClientModel(\App\Models\PassportClient::class);
+
+        // Bind a dummy authorization view to prevent BindingResolutionException,
+        // even though it will be skipped by our custom Client model.
+        \Laravel\Passport\Passport::authorizationView(function () {
+            return response('Authorization skipped.', 200);
+        });
     }
 }
